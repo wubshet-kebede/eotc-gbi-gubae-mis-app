@@ -1,0 +1,15 @@
+/* ./assets/css/tailwind.css */
+
+/* 1. Injects Tailwind's reset styles (Preflight) */
+@tailwind base;
+
+/* 2. Injects any component classes (like .btn-main if you make them) */
+@tailwind components;
+
+/* 3. Injects all the utility classes (like mt-4, flex, text-red-500) */
+@tailwind utilities;
+
+/* YOUR CUSTOM CSS GOES BELOW HERE */
+body {
+  @apply antialiased;
+}
