@@ -1,13 +1,41 @@
-# Node.js
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Nuxt build
-.nuxt/
-dist/
-
-# Environment files
+# .gitignore
 .env
-.env.*
+# -------------------------
+# Frontend (Nuxt3 - client/)
+# -------------------------
+client/node_modules/
+client/.nuxt/
+client/dist/
+client/.env
+client/.env.*
+
+# -------------------------
+# Backend (Go - server/)
+# -------------------------
+server/bin/
+server/*.log
+server/.env
+server/.env.*
+
+# -------------------------
+# Hasura CLI (hasura-cli/)
+# -------------------------
+# Ignore config with secrets, but keep metadata/migrations tracked
+hasura-cli/config.yaml
+hasura-cli/.env
+hasura-cli/.env.*
+
+# # -------------------------
+# # Database (db/)
+# # -------------------------
+# db/data/        # Postgres volume data
+# *.sql~          # temp SQL files
+
+# -------------------------
+# General / System
+# -------------------------
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db
