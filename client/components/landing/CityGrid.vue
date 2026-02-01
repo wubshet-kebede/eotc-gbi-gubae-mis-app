@@ -1,4 +1,5 @@
 <script setup>
+// We use ONE name consistently. Let's stick with 'activeCity'
 const activeCity = ref(null);
 
 const handleCitySelect = (name) => {
@@ -26,11 +27,10 @@ const cities = [
   },
 ];
 </script>
+
 <template>
   <section class="py-12">
-    <!-- Grid Wrapper: 1 column on mobile, 2 on tablet, 3 on desktop -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- We loop through our cities using the CityCard component -->
       <LandingCityCard
         v-for="city in cities"
         :key="city.name"
@@ -39,9 +39,12 @@ const cities = [
       />
     </div>
 
-    <!-- The Drill-Down Modal (Hidden by default) -->
-    <LandingGbiModal
-      v-if="activeCity"
+    <!-- 
+      FIXED: Changed 'selectedCity' to 'activeCity' to match your script.
+      The '!!' converts the string to a Boolean (true if a name exists).
+    -->
+    <LandingGbiGubaesModal
+      :is-open="!!activeCity"
       :city-name="activeCity"
       @close="activeCity = null"
     />
