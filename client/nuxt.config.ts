@@ -1,11 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
+  app: { baseURL: "/", buildAssetsDir: "/_nuxt/" },
   modules: [
     "@nuxtjs/tailwindcss",
-    "@nuxt/icon",
+    // "@nuxt/icon",
     "nuxt-headlessui",
     "@nuxtjs/google-fonts",
+    "@primevue/nuxt-module",
   ],
   googleFonts: {
     families: {
