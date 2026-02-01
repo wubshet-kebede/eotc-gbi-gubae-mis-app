@@ -28,6 +28,48 @@ const handleLogout = () => {
 };
 
 const isMobileOpen = ref(false);
+
+// This map defines the buttons for EVERY department
+const menuMap = {
+  // 1. CHAIRPERSON / OVERVIEW MODULE
+  dashboard: [
+    {
+      name: "Global Stats",
+      href: "dashboard",
+      icon: "lucide:layout-dashboard",
+    },
+    { name: "Approval Queue", href: "approvals", icon: "lucide:check-square" },
+    { name: "Senate Minutes", href: "minutes", icon: "lucide:file-text" },
+  ],
+  // 2. FINANCE MODULE (ሒሳብና ንብረት)
+  finance: [
+    { name: "General Ledger", href: "finance/ledger", icon: "lucide:book" },
+    {
+      name: "Budget Control",
+      href: "finance/budget",
+      icon: "lucide:pie-chart",
+    },
+    { name: "Asset Registry", href: "finance/assets", icon: "lucide:package" },
+    { name: "Payroll", href: "finance/payroll", icon: "lucide:banknote" },
+  ],
+  // 3. EDUCATION MODULE (ትምህርት)
+  education: [
+    { name: "Abinet Classes", href: "education/abinet", icon: "lucide:church" },
+    {
+      name: "Faith Courses",
+      href: "education/courses",
+      icon: "lucide:book-open",
+    },
+    { name: "Program Log", href: "education/merha-gbir", icon: "lucide:mic-2" },
+  ],
+};
+
+// Logic: Determine which menu to show based on the URL
+const activeMenu = computed(() => {
+  if (route.path.includes("/finance")) return menuMap.finance;
+  if (route.path.includes("/education")) return menuMap.education;
+  return menuMap.dashboard; // Default Overview
+});
 </script>
 <template>
   <div class="min-h-screen bg-slate-50 flex">
@@ -83,21 +125,21 @@ const isMobileOpen = ref(false);
                   >Ma'edot</span
                 >
               </div>
-              <nav class="mt-8 flex-1 space-y-1 px-4">
+              <nav class="px-4 space-y-2 mt-6">
                 <NuxtLink
-                  v-for="item in navigation"
+                  v-for="item in activeMenu"
                   :key="item.name"
-                  :to="item.href"
                   @click="isMobileOpen = false"
-                  class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all"
+                  :to="`/admin/${$route.params.slug}/${item.href}`"
+                  class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
                   :class="[
                     $route.path.includes(item.href)
-                      ? 'bg-maedot-gold text-maedot-navy'
-                      : 'text-slate-400 hover:bg-slate-800 hover:text-white',
+                      ? 'bg-maedot-gold text-maedot-navy font-bold'
+                      : 'text-slate-400 hover:bg-slate-800',
                   ]"
                 >
                   <Icon :name="item.icon" class="w-5 h-5" />
-                  {{ item.name }}
+                  <span class="text-sm">{{ item.name }}</span>
                 </NuxtLink>
               </nav>
             </HeadlessDialogPanel>
@@ -122,20 +164,20 @@ const isMobileOpen = ref(false);
       </div>
 
       <!-- Navigation Links -->
-      <nav class="flex-grow px-4 space-y-1 mt-4">
+      <nav class="px-4 space-y-2 mt-6">
         <NuxtLink
-          v-for="item in navigation"
+          v-for="item in activeMenu"
           :key="item.name"
-          :to="item.href"
-          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group"
+          :to="`/admin/${$route.params.slug}/${item.href}`"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all"
           :class="[
             $route.path.includes(item.href)
-              ? 'bg-maedot-gold text-maedot-navy shadow-lg shadow-maedot-gold/20'
-              : 'text-slate-400 hover:bg-slate-800 hover:text-white',
+              ? 'bg-maedot-gold text-maedot-navy font-bold'
+              : 'text-slate-400 hover:bg-slate-800',
           ]"
         >
           <Icon :name="item.icon" class="w-5 h-5" />
-          {{ item.name }}
+          <span class="text-sm">{{ item.name }}</span>
         </NuxtLink>
       </nav>
 
