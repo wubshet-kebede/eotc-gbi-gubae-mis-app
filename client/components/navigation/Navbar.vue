@@ -31,6 +31,7 @@
             >About</NuxtLink
           >
           <button
+            @click="navigateTo('/register-gbi-gubaes')"
             class="bg-maedot-navy text-white px-5 py-2 rounded-full hover:bg-slate-800 transition-all shadow-sm"
           >
             Register Gbi
