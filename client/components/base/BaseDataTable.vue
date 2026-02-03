@@ -70,4 +70,36 @@ console.log("BaseDataTable props:", props);
 :deep(.p-paginator) {
   @apply bg-white border-t border-slate-100 py-3;
 }
+:deep(.p-datatable.p-datatable-gridlines .p-datatable-header) {
+  border: none !important;
+}
+
+:deep(.p-datatable .p-datatable-header) {
+  background: white;
+  border: none !important; /* This kills that thick top line */
+  padding: 0; /* Let our inner div handle the padding */
+}
+
+/* If you are using striped rows, sometimes the container adds a border */
+:deep(.p-datatable) {
+  border: none !important;
+}
+/* Removes the default heavy black border from the footer */
+:deep(.p-paginator) {
+  @apply bg-white border-t border-slate-100 py-3 px-6 justify-center !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Styles the individual navigation buttons */
+:deep(.p-paginator button) {
+  @apply w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 transition-all !important;
+  border: none !important; /* Kills the black border on the buttons */
+}
+
+/* Styles the active page number */
+:deep(.p-paginator .p-highlight) {
+  @apply bg-maedot-navy text-white font-bold !important;
+}
 </style>

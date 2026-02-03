@@ -1,67 +1,10 @@
-<template>
-  <div class="space-y-6 animate-fade-in">
-    <div class="flex justify-between items-center">
-      <div class="space-y-1">
-        <h1 class="text-2xl font-black text-slate-900 uppercase">
-          Onboarding Requests
-        </h1>
-        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">
-          Verify University Recommendation Letters
-        </p>
-      </div>
-      <BaseButton variant="secondary" icon="lucide:history"
-        >Request History</BaseButton
-      >
-    </div>
-
-    <!-- Requests Table -->
-    <BaseCard :padding="false">
-      <BaseDataTable :data="pendingRequests" :loading="loading">
-        <Column field="date" header="Date Requested" />
-        <Column
-          field="name"
-          header="Gbi Gubae Name"
-          class="font-bold text-slate-900"
-        />
-        <Column field="university" header="University" />
-        <Column field="city" header="City" />
-        <Column header="Official Document">
-          <template #body="{ data }">
-            <BaseButton
-              variant="ghost"
-              size="sm"
-              icon="lucide:file-text"
-              class="text-maedot-gold font-bold underline"
-            >
-              View Letter
-            </BaseButton>
-          </template>
-        </Column>
-        <Column header="Final Action">
-          <template #body="{ data }">
-            <div class="flex gap-2">
-              <BaseButton size="sm" variant="primary" @click="approveGuba(data)"
-                >Approve</BaseButton
-              >
-              <BaseButton
-                size="sm"
-                variant="ghost"
-                class="text-rose-600"
-                @click="rejectGuba(data)"
-                >Reject</BaseButton
-              >
-            </div>
-          </template>
-        </Column>
-      </BaseDataTable>
-    </BaseCard>
-  </div>
-</template>
-
 <script setup>
 definePageMeta({ layout: "super" });
 
+const isReviewerOpen = ref(false);
+const selectedRequest = ref(null);
 const loading = ref(false);
+
 const pendingRequests = ref([
   {
     id: 1,
@@ -79,15 +22,75 @@ const pendingRequests = ref([
   },
 ]);
 
-const approveGuba = (data) => {
-  const confirm = window.confirm(
-    `Approve ${data.name} and initialize 12-department database?`,
-  );
-  if (confirm) {
-    alert(
-      `${data.name} is now ACTIVE. Admin credentials sent to their Chairperson.`,
-    );
-    // Logic: Trigger Hasura mutation to change status to 'ACTIVE' and create departments
-  }
+const openReview = (data) => {
+  selectedRequest.value = data;
+  isReviewerOpen.value = true;
+};
+
+const handleApprove = ({ id, comment }) => {
+  // LOGIC: Create Chairperson account + Init 12 Depts
+  isReviewerOpen.value = false;
+  alert(`Organization approved with comment: ${comment}`);
 };
 </script>
+
+<template>
+  <div class="space-y-6 animate-fade-in">
+    <!-- Header -->
+    <div
+      class="flex justify-between items-center bg-white p-8 rounded-3xl border border-slate-200"
+    >
+      <div class="space-y-1">
+        <h1
+          class="text-2xl font-black text-slate-900 uppercase tracking-tighter"
+        >
+          Verification Queue
+        </h1>
+        <p class="text-xs text-slate-500 font-bold uppercase tracking-widest">
+          Verify University Credentials & Provision Tenants
+        </p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-bold text-slate-400"
+          >Total Pending: {{ pendingRequests.length }}</span
+        >
+        <BaseButton variant="secondary" size="sm" icon="lucide:history"
+          >Archives</BaseButton
+        >
+      </div>
+    </div>
+
+    <!-- Requests Table -->
+    <BaseCard :padding="false">
+      <BaseDataTable :data="pendingRequests" :loading="loading">
+        <Column field="date" header="Date" />
+        <Column
+          field="name"
+          header="Organization"
+          class="font-bold text-slate-900"
+        />
+        <Column field="university" header="University" />
+        <Column header="Verification">
+          <template #body="{ data }">
+            <BaseButton
+              variant="secondary"
+              size="sm"
+              icon="lucide:shield-search"
+              @click="openReview(data)"
+            >
+              Review Application
+            </BaseButton>
+          </template>
+        </Column>
+      </BaseDataTable>
+    </BaseCard>
+
+    <!-- THE REUSABLE REVIEW TERMINAL -->
+    <SuperRequestReviewDrawer
+      :is-open="isReviewerOpen"
+      :request="selectedRequest"
+      @close="isReviewerOpen = false"
+      @approve="handleApprove"
+    />
+  </div>
+</template>

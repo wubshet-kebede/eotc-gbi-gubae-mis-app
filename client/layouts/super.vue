@@ -33,7 +33,7 @@ const navigation = [
         <div
           class="w-8 h-8 bg-maedot-gold rounded-lg flex items-center justify-center font-black text-slate-900"
         >
-          Σ
+          M
         </div>
         <span class="font-black tracking-tighter uppercase text-sm"
           >Ma'edot Master</span
