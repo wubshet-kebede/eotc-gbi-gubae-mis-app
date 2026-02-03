@@ -1,4 +1,6 @@
 <script setup>
+import BaseInput from "~/components/base/BaseInput.vue";
+
 definePageMeta({ layout: "admin" });
 
 const loading = ref(false);
@@ -43,6 +45,18 @@ const confirmSignature = () => {
     `Document "${activeRequest.value.description}" has been Digitally Signed.`,
   );
 };
+
+const isReviewOpen = ref(false);
+
+const handleReview = (data) => {
+  activeRequest.value = data;
+  isReviewOpen.value = true;
+};
+
+const handleSignTrigger = () => {
+  isReviewOpen.value = false;
+  showSignModal.value = true;
+};
 </script>
 <template>
   <div class="space-y-6">
@@ -77,83 +91,106 @@ const confirmSignature = () => {
     </div>
 
     <!-- The Master Approval Table -->
-    <BaseDataTable title="Approval Queue" :data="queueData" :loading="loading">
-      <Column field="type" header="Category">
-        <template #body="{ data }">
-          <span class="font-bold text-xs">{{ data.type }}</span>
-        </template>
-      </Column>
-      <Column field="description" header="Request Details" />
-      <Column field="amount" header="Total Value">
-        <template #body="{ data }">
-          <span class="font-black text-maedot-navy">{{ data.amount }} ETB</span>
-        </template>
-      </Column>
-      <Column header="Verification">
-        <template #body="{ data }">
-          <!-- Checks if Planning Dept approved it first (Ref #11) -->
-          <div
-            v-if="data.planningVerified"
-            class="flex items-center gap-1 text-emerald-600 text-[10px] font-bold"
-          >
-            <Icon name="lucide:shield-check" /> Verified by Planning
-          </div>
-        </template>
-      </Column>
-      <Column header="Actions">
-        <template #body="{ data }">
-          <div class="flex gap-2">
-            <BaseButton size="sm" variant="secondary" @click="viewDetails(data)"
-              >View</BaseButton
-            >
-            <BaseButton
-              size="sm"
-              variant="primary"
-              @click="triggerSignature(data)"
-              >Sign</BaseButton
-            >
-          </div>
-        </template>
-      </Column>
-    </BaseDataTable>
 
-    <!-- Digital Signature Modal (The PIN logic) -->
-    <BaseCard
-      v-if="showSignModal"
-      class="fixed inset-0 z-[100] flex items-center justify-center bg-maedot-navy/50 backdrop-blur-sm"
+    <!-- The Master Table -->
+    <BaseCard :padding="false" class="border-t-4 border-maedot-navy">
+      <BaseDataTable :data="queueData">
+        <Column field="type" header="Department" class="font-bold text-xs" />
+        <Column field="description" header="Request Details" />
+        <Column header="Verification">
+          <template #body="{ data }">
+            <span
+              v-if="data.planningVerified"
+              class="text-[9px] font-black text-emerald-600 uppercase flex items-center gap-1"
+            >
+              <Icon name="lucide:check-circle-2" /> Verified by Planning
+            </span>
+          </template>
+        </Column>
+        <Column header="Actions" class="text-right">
+          <template #body="{ data }">
+            <BaseButton
+              variant="primary"
+              size="sm"
+              icon="lucide:eye"
+              @click="handleReview(data)"
+              >Review & Sign</BaseButton
+            >
+          </template>
+        </Column>
+        <!-- <Column header="Seal" class="text-right">
+          <template #body="{ data }">
+            <BaseButton
+              variant="primary"
+              size="sm"
+              icon="lucide:eye"
+              @click="handleSignTrigger(data)"
+              >Seals</BaseButton
+            >
+          </template>
+        </Column> -->
+      </BaseDataTable>
+    </BaseCard>
+    <!-- 1. THE REVIEW DRAWER (Using our Base Component) -->
+    <BaseGovernanceDrawer
+      :is-open="isReviewOpen"
+      :title="'Review: ' + activeRequest?.type"
+      subtitle="Verify documentation before digital signature"
+      action-label="Proceed to Signature"
+      @close="isReviewOpen = false"
+      @confirm="handleSignTrigger"
     >
-      <div
-        class="bg-white p-8 rounded-3xl max-w-sm w-full shadow-2xl border-t-8 border-maedot-gold space-y-6"
-      >
-        <div class="text-center">
-          <Icon
-            name="lucide:lock"
-            class="w-12 h-12 text-maedot-gold mx-auto mb-2"
-          />
-          <h3 class="text-lg font-black text-maedot-navy">
-            Authorize Transaction
-          </h3>
-          <p class="text-xs text-slate-500">
-            Please enter your Secure PIN to digitally sign.
+      <div class="space-y-6">
+        <div
+          class="p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center text-center"
+        >
+          <Icon name="lucide:file-text" class="w-12 h-12 text-slate-300 mb-2" />
+          <p
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+          >
+            Attached Receipt/Voucher
           </p>
+          <BaseButton variant="ghost" size="sm" class="mt-4"
+            >View Full Document</BaseButton
+          >
         </div>
 
+        <div class="space-y-4">
+          <div class="flex justify-between border-b pb-2">
+            <span class="text-[10px] font-black text-slate-400 uppercase"
+              >Requester</span
+            >
+            <span class="text-xs font-bold text-maedot-navy">{{
+              activeRequest?.requester
+            }}</span>
+          </div>
+          <div class="flex justify-between border-b pb-2">
+            <span class="text-[10px] font-black text-slate-400 uppercase"
+              >Total Value</span
+            >
+            <span class="text-lg font-black text-maedot-navy"
+              >{{ activeRequest?.amount }} ETB</span
+            >
+          </div>
+        </div>
+      </div>
+    </BaseGovernanceDrawer>
+    <!-- 2. THE PIN MODAL (Final Seal) -->
+    <BaseGovernanceModal
+      :is-open="showSignModal"
+      title="Enter Security PIN"
+      description="Type your 4-digit master code to seal this transaction."
+      @close="showSignModal = false"
+      action-label="Apply Digital Seal"
+    >
+      <div class="flex justify-center py-4">
         <BaseInput
           v-model="pin"
           type="password"
-          placeholder="••••"
-          class="text-center text-2xl tracking-[1em]"
+          maxlength="4"
+          class="w-48 h-16 text-center text-3xl font-black tracking-[0.5em] bg-slate-100 rounded-2xl border-2 border-maedot-gold outline-none"
         />
-
-        <div class="flex gap-3">
-          <BaseButton variant="ghost" block @click="showSignModal = false"
-            >Cancel</BaseButton
-          >
-          <BaseButton variant="primary" block @click="confirmSignature"
-            >Confirm Signature</BaseButton
-          >
-        </div>
       </div>
-    </BaseCard>
+    </BaseGovernanceModal>
   </div>
 </template>

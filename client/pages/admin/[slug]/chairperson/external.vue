@@ -1,115 +1,265 @@
 <script setup>
+/**
+ * EXTERNAL RELATIONS & DIPLOMACY (Ref #1 & #2)
+ * Tasks: University Liaison, Church Reporting, and Executive Delegation
+ */
 definePageMeta({ layout: "admin" });
 
-// Industry Logic: Tracks meetings with Ma'ekel and Partners
-const externalLogs = ref([
+const route = useRoute();
+const slug = route.params.slug;
+const isConsultationOpen = ref(false);
+
+// TASK: Tracking Interactions with External Entities
+const externalTimeline = ref([
   {
     id: 1,
-    entity: "Ma'ekel (Center)",
-    subject: "Budget Revision for 2018",
-    date: "Oct 29",
-    outcome: "Pending Approval",
+    entity: "University Administration",
+    subject: "Hall Reservation: Graduation Feast",
+    status: "APPROVED",
+    date: "2 days ago",
+    icon: "lucide:building-2",
+    color: "bg-emerald-500",
   },
   {
     id: 2,
-    entity: "University Admin",
-    subject: "Hall Reservation for Graduation",
-    date: "Oct 25",
-    outcome: "Successful",
+    entity: "EOTC Ma'ekel (Center)",
+    subject: "Quarterly Spiritual Progress Report",
+    status: "SENT",
+    date: "5 days ago",
+    icon: "lucide:church",
+    color: "bg-maedot-gold",
+  },
+  {
+    id: 3,
+    entity: "Local Diocese (Hagere Sibket)",
+    subject: "Letter of Support for Annual Bazaar",
+    status: "AWAITING STAMP",
+    date: "1 week ago",
+    icon: "lucide:scroll",
+    color: "bg-slate-400",
   },
 ]);
 
-// Ref #2: Tasks "Pushed" from the Chairperson to the Vice-Chair
+// TASK: Pushing Work to Vice-Chair (Ref #2 Proxy)
 const delegatedTasks = ref([
-  { id: 1, title: "Verify Audit Discrepancies in Dept 7", due: "In 2 Days" },
-  { id: 2, title: "Draft Response Letter to Ma'ekel", due: "Today" },
+  {
+    id: 101,
+    title: "Meet with Campus Security Head",
+    due: "Tomorrow",
+    priority: "High",
+  },
+  {
+    id: 102,
+    title: "Draft Response to Ma'ekel Directive",
+    due: "In 3 Days",
+    priority: "Normal",
+  },
 ]);
+
+const handleLogConsultation = () => {
+  isConsultationOpen.value = true;
+};
 </script>
+
 <template>
   <div class="space-y-8 animate-fade-in">
-    <!-- Header -->
-    <div class="flex justify-between items-center">
-      <div>
+    <!-- 1. DIPLOMATIC HEADER -->
+    <div
+      class="flex justify-between items-center bg-white p-8 rounded-3xl border border-slate-200"
+    >
+      <div class="space-y-1">
         <h1
-          class="text-2xl font-black text-maedot-navy uppercase tracking-tight"
+          class="text-2xl font-black text-maedot-navy uppercase tracking-tighter"
         >
-          External Relations & CRM
+          External Diplomacy
         </h1>
-        <p class="text-sm text-slate-500 font-medium">
-          Managing the link between {{ $route.params.slug }} and the Center
-          (Ma'ekel).
+        <p
+          class="text-xs text-slate-500 font-bold uppercase tracking-widest italic"
+        >
+          Liaison with University & Church Hierarchy
         </p>
       </div>
       <BaseButton
         variant="primary"
-        icon="lucide:external-link"
-        @click="logExternalMeeting"
+        icon="lucide:file-plus"
+        @click="handleLogConsultation"
       >
-        Log External Consultation
+        New Diplomatic Record
       </BaseButton>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-      <!-- 1. EXTERNAL ENTITY LOG (Ref #2 Operational Link) -->
-      <div class="xl:col-span-2">
-        <BaseCard :padding="false">
-          <div
-            class="p-6 border-b border-slate-100 flex justify-between items-center"
-          >
-            <h3
-              class="font-bold text-maedot-navy text-[10px] uppercase tracking-widest"
+    <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+      <!-- 2. INTERACTION TIMELINE (Ref #1 Logic) -->
+      <div class="xl:col-span-8">
+        <BaseCard
+          title="Interaction History"
+          subtitle="Chronological log of external communications"
+        >
+          <div class="mt-8 space-y-8">
+            <div
+              v-for="log in externalTimeline"
+              :key="log.id"
+              class="relative pl-10"
             >
-              Partner & Center Interactions
-            </h3>
+              <!-- Vertical Line -->
+              <div
+                class="absolute left-4 top-1 w-[2px] h-full bg-slate-100 last:h-0"
+              ></div>
+              <!-- Icon Indicator -->
+              <div
+                :class="log.color"
+                class="absolute left-0 top-0 w-8 h-8 rounded-xl flex items-center justify-center text-white shadow-lg shadow-slate-200"
+              >
+                <Icon :name="log.icon" class="w-4 h-4" />
+              </div>
+
+              <div
+                class="bg-slate-50 rounded-2xl p-6 border border-slate-100 hover:border-maedot-gold transition-colors"
+              >
+                <div class="flex justify-between items-start mb-2">
+                  <span
+                    class="text-[10px] font-black text-maedot-gold uppercase tracking-widest"
+                    >{{ log.entity }}</span
+                  >
+                  <span class="text-[10px] font-bold text-slate-400 italic">{{
+                    log.date
+                  }}</span>
+                </div>
+                <h4 class="text-sm font-black text-maedot-navy uppercase">
+                  {{ log.subject }}
+                </h4>
+                <div class="mt-4 flex gap-2">
+                  <span
+                    class="px-2 py-0.5 rounded bg-white border border-slate-200 text-[9px] font-bold uppercase text-slate-500"
+                  >
+                    Status: {{ log.status }}
+                  </span>
+                  <BaseButton
+                    variant="ghost"
+                    size="sm"
+                    class="text-[9px] p-0 h-auto"
+                    >View Attached Letter</BaseButton
+                  >
+                </div>
+              </div>
+            </div>
           </div>
-          <BaseDataTable :data="externalLogs">
-            <Column field="subject" header="Consultation Topic" />
-            <Column field="date" header="Date" />
-            <Column header="Outcome">
-              <template #body="{ data }">
-                <span class="text-xs font-medium text-slate-600">{{
-                  data.outcome
-                }}</span>
-              </template>
-            </Column>
-          </BaseDataTable>
         </BaseCard>
       </div>
 
-      <!-- 2. DELEGATED TASK INBOX (Ref #2 Proxy) -->
-      <div class="space-y-6">
-        <h3
-          class="text-xs font-black text-slate-400 uppercase tracking-widest ml-1"
+      <!-- 3. DELEGATION WORKSPACE (Ref #2 Proxy Logic) -->
+      <div class="xl:col-span-4 space-y-6">
+        <div
+          class="p-6 bg-maedot-navy rounded-3xl text-white relative overflow-hidden"
         >
-          Tasks Pushed by Chair
-        </h3>
-        <div class="space-y-3">
-          <div
-            v-for="task in delegatedTasks"
-            :key="task.id"
-            class="p-4 bg-white border-l-4 border-maedot-gold rounded-r-2xl shadow-sm hover:shadow-md transition-all"
+          <Icon
+            name="lucide:corner-right-down"
+            class="absolute -right-4 -bottom-4 w-24 h-24 opacity-10 text-maedot-gold"
+          />
+          <h3
+            class="text-xs font-black text-maedot-gold uppercase tracking-widest mb-4"
           >
-            <div class="flex justify-between items-start mb-2">
-              <span class="text-[10px] font-black text-maedot-navy uppercase"
-                >Due: {{ task.due }}</span
-              >
-              <Icon
-                name="lucide:corner-right-down"
-                class="w-4 h-4 text-maedot-gold"
-              />
-            </div>
-            <p class="text-sm font-bold text-slate-700 leading-tight">
-              {{ task.title }}
-            </p>
-            <BaseButton
-              variant="ghost"
-              size="sm"
-              class="mt-3 p-0 h-auto text-[10px] uppercase font-black text-eotc-red"
-              >Mark as Resolved</BaseButton
+            Task Delegation
+          </h3>
+
+          <div class="space-y-4">
+            <div
+              v-for="task in delegatedTasks"
+              :key="task.id"
+              class="p-4 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors"
             >
+              <div class="flex justify-between items-start mb-1">
+                <span
+                  class="text-[9px] font-black uppercase"
+                  :class="
+                    task.priority === 'High'
+                      ? 'text-rose-400'
+                      : 'text-slate-400'
+                  "
+                >
+                  Due: {{ task.due }}
+                </span>
+                <Icon
+                  name="lucide:user-check"
+                  class="w-3 h-3 text-maedot-gold"
+                />
+              </div>
+              <p class="text-xs font-bold text-slate-200 leading-tight">
+                {{ task.title }}
+              </p>
+              <button
+                class="mt-3 text-[9px] font-black uppercase text-maedot-gold hover:underline"
+              >
+                Track Progress
+              </button>
+            </div>
           </div>
+
+          <BaseButton
+            variant="ghost"
+            block
+            size="sm"
+            class="mt-6 border border-white/20 text-white hover:bg-white/10"
+          >
+            Delegate New Task
+          </BaseButton>
         </div>
+
+        <!-- External Support -->
+        <BaseCard title="External Contacts" class="bg-slate-50 border-none">
+          <div class="space-y-3">
+            <div
+              class="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100"
+            >
+              <Icon name="lucide:phone" class="w-4 h-4 text-slate-300" />
+              <span class="text-xs font-bold text-slate-600"
+                >University Dean's Office</span
+              >
+            </div>
+            <div
+              class="flex items-center gap-3 p-3 bg-white rounded-2xl border border-slate-100"
+            >
+              <Icon name="lucide:mail" class="w-4 h-4 text-slate-300" />
+              <span class="text-xs font-bold text-slate-600"
+                >Ma'ekel Reporting Desk</span
+              >
+            </div>
+          </div>
+        </BaseCard>
       </div>
     </div>
+
+    <!-- MODAL: LOG NEW INTERACTION (Reusing Base Drawer) -->
+    <BaseGovernanceDrawer
+      :is-open="isConsultationOpen"
+      title="Log Diplomatic Record"
+      subtitle="Filing external communications for institutional memory"
+      action-label="Seal & Save Record"
+      @close="isConsultationOpen = false"
+    >
+      <div class="space-y-6">
+        <BaseInput
+          label="External Entity"
+          placeholder="e.g. University Dean"
+          icon="lucide:building-2"
+        />
+        <BaseInput
+          label="Subject / Topic"
+          placeholder="e.g. Hall Request for Oct 30"
+          icon="lucide:scroll"
+        />
+        <div
+          class="p-6 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center bg-slate-50"
+        >
+          <Icon
+            name="lucide:upload-cloud"
+            class="w-8 h-8 text-maedot-gold mb-2"
+          />
+          <p class="text-[10px] font-black text-slate-400 uppercase">
+            Upload Scanned Official Letter
+          </p>
+        </div>
+      </div>
+    </BaseGovernanceDrawer>
   </div>
 </template>
