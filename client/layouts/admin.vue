@@ -33,6 +33,11 @@ const menuMap = {
       href: "chairperson/handover",
       icon: "lucide:refresh-cw",
     },
+    {
+      name: "external Relations",
+      href: "chairperson/external",
+      icon: "lucide:globe",
+    },
   ],
   finance: [
     { name: "General Ledger", href: "finance/ledger", icon: "lucide:book" },
