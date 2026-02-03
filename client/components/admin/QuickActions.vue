@@ -1,4 +1,11 @@
-<script setup></script>
+<script setup>
+const isRegOpen = ref(false);
+
+const onUserCreated = (userData) => {
+  console.log("Chairperson successfully registered:", userData.full_name);
+  // This data will eventually go to Hasura
+};
+</script>
 <template>
   <div class="space-y-4">
     <h3
@@ -14,6 +21,7 @@
         block
         icon="lucide:user-plus"
         class="justify-start hover:border-maedot-gold group"
+        @click="isRegOpen = true"
       >
         <span class="group-hover:text-maedot-navy">New Registration</span>
       </BaseButton>
@@ -64,6 +72,12 @@
         all drafts.
       </p>
     </BaseCard>
+    <!-- THE MODULAR DRAWER -->
+    <ChairExecutiveRegistrationDrawer
+      :is-open="isRegOpen"
+      @close="isRegOpen = false"
+      @registered="onUserCreated"
+    />
   </div>
 </template>
 

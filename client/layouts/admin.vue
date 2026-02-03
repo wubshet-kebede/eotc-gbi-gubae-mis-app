@@ -10,12 +10,24 @@ const menuMap = {
   chairperson: [
     {
       name: "Executive Overview",
-      href: "dashboard",
+      href: "chairperson",
       icon: "lucide:layout-dashboard",
     },
-    { name: "Sign-off Queue", href: "approvals", icon: "lucide:pen-tool" },
-    { name: "Senate Oversight", href: "senate", icon: "lucide:users" },
-    { name: "Master Archive", href: "archives", icon: "lucide:archive" },
+    {
+      name: "Sign-off Queue",
+      href: "chairperson/approvals",
+      icon: "lucide:pen-tool",
+    },
+    {
+      name: "Senate Oversight",
+      href: "chairperson/senate",
+      icon: "lucide:users",
+    },
+    {
+      name: "Master Archive",
+      href: "chairperson/archives",
+      icon: "lucide:archive",
+    },
     {
       name: "Leadership Handover",
       href: "chairperson/handover",
