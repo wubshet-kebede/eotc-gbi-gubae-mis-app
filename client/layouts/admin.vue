@@ -56,6 +56,11 @@ const menuMap = {
       href: "finance/archives",
       icon: "lucide:history",
     },
+    {
+      name: "Handover Reports",
+      href: "finance/handover",
+      icon: "lucide:file-chart",
+    },
   ],
   education: [
     {
