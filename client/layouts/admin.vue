@@ -146,6 +146,19 @@ const menuMap = {
       icon: "lucide:bar-chart-3",
     },
   ],
+  charity: [
+    { name: "Donation Drives", href: "charity", icon: "lucide:gift" },
+    {
+      name: "Past Activites",
+      href: "charity/archives",
+      icon: "lucide:users",
+    },
+    {
+      name: "Handover Records",
+      href: "charity/handover",
+      icon: "lucide:file-chart",
+    },
+  ],
 };
 
 /**
@@ -162,6 +175,7 @@ const activeMenu = computed(() => {
   if (path.includes("/arts")) return menuMap.arts;
   if (path.includes("/revenue")) return menuMap.revenue;
   if (path.includes("/planning")) return menuMap.planning;
+  if (path.includes("/charity")) return menuMap.charity;
   return menuMap.chairperson; // Default home
 });
 

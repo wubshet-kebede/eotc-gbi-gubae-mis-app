@@ -141,6 +141,7 @@ import {
   TransitionChild,
   TransitionRoot,
 } from "@headlessui/vue";
+import BaseButton from "./BaseButton.vue";
 
 defineProps({
   isOpen: Boolean,
