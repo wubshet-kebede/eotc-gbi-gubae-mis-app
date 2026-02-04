@@ -1,81 +1,155 @@
+<script setup>
+definePageMeta({ layout: "admin" });
+
+// Logic: Library Check from your code
+const shelfCheck = ref([
+  { id: 1, name: "Cabinet A: Dogma", count: 450, verified: true },
+  { id: 2, name: "Cabinet B: History", count: 320, verified: true },
+  { id: 3, name: "Cabinet C: Ge'ez", count: 470, verified: false },
+]);
+
+// TASK: Transferring unfinished mercy cases (Ref #10)
+const ongoingMercyCases = ref([
+  {
+    id: 1,
+    name: "Abebe K.",
+    support: "Medical",
+    balanceRemaining: "1,500 ETB",
+  },
+]);
+
+// Requirement: Must verify all shelves AND accept open cases
+const allVerified = computed(
+  () =>
+    shelfCheck.value.every((s) => s.verified) &&
+    ongoingMercyCases.value.length > 0,
+);
+</script>
+
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center border-b pb-4">
-      <h1 class="text-2xl font-black text-maedot-navy uppercase">
-        Professional Handover
-      </h1>
-      <span
-        class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-black uppercase"
-        >Library Audit Phase</span
-      >
+  <div class="space-y-8 animate-fade-in">
+    <!-- Header -->
+    <div
+      class="flex justify-between items-center bg-white p-8 rounded-3xl border border-slate-200"
+    >
+      <div class="space-y-1">
+        <h1
+          class="text-2xl font-black text-maedot-navy uppercase tracking-tighter"
+        >
+          Charity Handover
+        </h1>
+        <p
+          class="text-xs text-slate-500 font-bold uppercase tracking-widest italic"
+        >
+          Asset & Beneficiary Succession Terminal
+        </p>
+      </div>
+      <div class="px-4 py-2 bg-rose-50 border border-rose-100 rounded-2xl">
+        <span class="text-[10px] font-black text-rose-600 uppercase"
+          >Audit Phase: 75% Complete</span
+        >
+      </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- 1. PHYSICAL BOOK AUDIT (Ref #10 ILS) -->
-      <BaseCard title="Library Cabinet Audit">
-        <div class="space-y-4">
-          <div
-            v-for="shelf in shelfCheck"
-            :key="shelf.id"
-            class="flex items-center justify-between p-3 bg-slate-50 rounded-xl"
-          >
-            <div class="flex items-center gap-3">
-              <Icon name="lucide:library" class="text-slate-400" />
-              <div>
-                <p class="text-sm font-bold text-slate-700">{{ shelf.name }}</p>
-                <p class="text-[10px] text-slate-500">
-                  Target: {{ shelf.count }} Books
-                </p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- 1. LIBRARY CABINET AUDIT (Your Logic) -->
+      <div class="lg:col-span-7 space-y-6">
+        <BaseCard title="Physical Library Reconciliation">
+          <div class="space-y-4">
+            <div
+              v-for="shelf in shelfCheck"
+              :key="shelf.id"
+              class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-maedot-gold transition-all"
+            >
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm"
+                >
+                  <Icon name="lucide:book-open" class="text-maedot-gold" />
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-slate-700 uppercase">
+                    {{ shelf.name }}
+                  </p>
+                  <p
+                    class="text-[10px] font-black text-slate-400 uppercase tracking-tighter"
+                  >
+                    Total: {{ shelf.count }} Registered Items
+                  </p>
+                </div>
               </div>
+              <input
+                type="checkbox"
+                v-model="shelf.verified"
+                class="w-5 h-5 rounded border-slate-300 text-maedot-gold focus:ring-maedot-gold"
+              />
             </div>
-            <input
-              type="checkbox"
-              v-model="shelf.verified"
-              class="rounded text-maedot-gold"
-            />
+          </div>
+        </BaseCard>
+
+        <!-- 2. OPEN MERCY CASES (The Heart Transfer) -->
+        <BaseCard
+          title="Active Beneficiary Transfer"
+          subtitle="Handing over ongoing support cases"
+        >
+          <div
+            v-for="caseItem in ongoingMercyCases"
+            :key="caseItem.id"
+            class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex justify-between items-center"
+          >
+            <div>
+              <p class="text-xs font-black text-emerald-900 uppercase">
+                {{ caseItem.name }}
+              </p>
+              <p class="text-[10px] text-emerald-600 font-bold uppercase">
+                {{ caseItem.support }} Case • Balance:
+                {{ caseItem.balanceRemaining }}
+              </p>
+            </div>
+            <Icon name="lucide:heart" class="text-emerald-500 w-5 h-5" />
+          </div>
+        </BaseCard>
+      </div>
+
+      <!-- 3. FINAL SIGN-OFF (The Authority Transfer) -->
+      <div class="lg:col-span-5">
+        <div
+          class="p-8 bg-maedot-navy rounded-[2.5rem] text-white space-y-6 shadow-2xl relative overflow-hidden"
+        >
+          <Icon
+            name="lucide:key"
+            class="absolute -right-6 -bottom-6 w-32 h-32 opacity-10 text-maedot-gold"
+          />
+
+          <h3
+            class="text-sm font-black text-maedot-gold uppercase tracking-widest"
+          >
+            Master Succession Statement
+          </h3>
+          <p class="text-xs text-slate-400 italic leading-relaxed">
+            "I hereby certify that the <strong>1,240 Library Assets</strong> and
+            <strong>156 Professional Contacts</strong> have been audited. Any
+            discrepancies are noted in the 2017 E.C. Year-End Report."
+          </p>
+
+          <div class="pt-6 border-t border-white/10 space-y-4">
+            <div
+              class="flex justify-between text-[10px] uppercase font-black text-slate-500"
+            >
+              <span>Lost/Damaged Books</span>
+              <span class="text-rose-400">03 (Flagged for Review)</span>
+            </div>
+            <BaseButton
+              block
+              variant="primary"
+              icon="lucide:shield-check"
+              :disabled="!allVerified"
+            >
+              Seal Professional Handover
+            </BaseButton>
           </div>
         </div>
-      </BaseCard>
-
-      <!-- 2. VOLUNTEER NETWORK TRANSFER (Ref #10) -->
-      <div class="space-y-6">
-        <BaseCard class="bg-maedot-navy text-white">
-          <h3 class="text-maedot-gold font-black uppercase text-xs mb-4">
-            Professional Talent Transfer
-          </h3>
-          <p class="text-[11px] text-slate-400 leading-relaxed mb-6">
-            "I hereby transfer control of the **Library Catalog (1,240 items)**
-            and the **Volunteer Professional Directory (156 members)** to the
-            incoming coordinator."
-          </p>
-          <div class="space-y-2 mb-6 border-t border-white/10 pt-4">
-            <div
-              class="flex justify-between text-[10px] uppercase font-black text-maedot-gold"
-            >
-              <span>Missing/Lost Books</span>
-              <span class="text-white">03</span>
-            </div>
-          </div>
-          <BaseButton
-            block
-            variant="primary"
-            icon="lucide:key-round"
-            :disabled="!allVerified"
-          >
-            Finalize Professional Handover
-          </BaseButton>
-        </BaseCard>
       </div>
     </div>
   </div>
 </template>
-
-<script setup>
-definePageMeta({ layout: "admin" });
-const allVerified = ref(false);
-const shelfCheck = ref([
-  { id: 1, name: "Cabinet A: Dogma/Theology", count: 450, verified: true },
-  { id: 2, name: "Cabinet B: Church History", count: 320, verified: true },
-  { id: 3, name: "Cabinet C: Ge'ez & Zema", count: 470, verified: false },
-]);
-</script>
