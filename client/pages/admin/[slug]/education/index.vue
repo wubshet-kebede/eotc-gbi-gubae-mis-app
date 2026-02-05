@@ -1,4 +1,5 @@
 <script setup>
+import BaseGovernanceDrawer from "~/components/base/BaseGovernanceDrawer.vue";
 definePageMeta({ layout: "admin" });
 
 const activeClasses = ref([
@@ -6,6 +7,17 @@ const activeClasses = ref([
   { id: 2, name: "Dogma 101", teacher: "Dn. Elias", milestones: 4 },
   { id: 3, name: "Wudase Mariam", teacher: "Memhir Tekle", milestones: 11 },
 ]);
+const isMarkingLesson = ref(false);
+const selectedClass = ref(null);
+
+const markLesson = (course) => {
+  selectedClass.value = course;
+  isMarkingLesson.value = true;
+};
+
+const handleTaxiLog = () => {
+  // Logic: 1. Input Guest Name | 2. Amount | 3. Auto-generate voucher for Finance Head
+};
 </script>
 <template>
   <div class="space-y-8 animate-fade-in">
@@ -87,6 +99,7 @@ const activeClasses = ref([
                   size="sm"
                   variant="ghost"
                   icon="lucide:clipboard-check"
+                  @click="markLesson(data)"
                   >Mark Lesson</BaseButton
                 >
               </template>
@@ -119,5 +132,37 @@ const activeClasses = ref([
         />
       </div>
     </div>
+    <BaseGovernanceDrawer
+      :is-open="isMarkingLesson"
+      :title="'Log Lesson: ' + selectedClass?.name"
+      subtitle="Updating Curriculum & Attendance"
+      action-label="Complete Lesson"
+      @close="isMarkingLesson = false"
+    >
+      <div class="space-y-6">
+        <!-- Progress Update -->
+        <div class="p-4 bg-slate-50 rounded-2xl">
+          <p class="text-[10px] font-black text-slate-400 uppercase">
+            Current Milestone: {{ selectedClass?.milestones }}/12
+          </p>
+          <input
+            type="range"
+            min="1"
+            max="12"
+            class="w-full accent-maedot-gold"
+          />
+        </div>
+
+        <!-- Attendance Link -->
+        <BaseButton variant="secondary" block icon="lucide:users"
+          >Select Attendees (184 Enrolled)</BaseButton
+        >
+
+        <p class="text-[10px] text-center text-slate-400 italic">
+          "Completing this lesson updates the student's spiritual health
+          analytics."
+        </p>
+      </div>
+    </BaseGovernanceDrawer>
   </div>
 </template>
