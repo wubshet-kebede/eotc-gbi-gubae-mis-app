@@ -1,112 +1,160 @@
 <script setup>
+/**
+ * ABINET TRACKING MODULE (Ref #4)
+ * Logic: Mastery-Based Progression, Bulk Certification, and Manual Promotion
+ */
 definePageMeta({ layout: "admin" });
 
-const selectedClass = ref(null);
-const showAddClass = ref(false);
+const route = useRoute();
+const slug = route.params.slug;
 
+// 1. STATE: Selected Book Stream (The Buckets)
+const selectedClass = ref(null);
+const isEnrollOpen = ref(false);
+const selectedStudents = ref([]); // For Bulk Actions
+
+// 2. DATA: Traditional Subjects (The sequence: Wudase -> Dawit -> Kiddase)
 const abinetClasses = ref([
   {
     id: 1,
-    name: "Kiddase Zema",
+    name: "Wudase Mariam",
     teacher: "Memhir Zewdu",
-    schedule: "Sat/Sun",
-    milestones: 8,
+    schedule: "Daily",
+    type: "ABINET",
   },
   {
     id: 2,
-    name: "Wudase Mariam",
-    teacher: "Dn. Elias",
-    schedule: "Tues/Thurs",
-    milestones: 11,
+    name: "Mezmure Dawit",
+    teacher: "Memhir Tekle",
+    schedule: "Daily",
+    type: "ABINET",
   },
   {
     id: 3,
-    name: "Ge'ez Language Lvl 1",
-    teacher: "Memhir Tekle",
-    schedule: "Mon/Wed",
-    milestones: 4,
+    name: "Kiddase Zema",
+    teacher: "Dn. Elias",
+    schedule: "Daily",
+    type: "ABINET",
   },
 ]);
 
+// 3. DATA: Students (Mock data filtered by the selected book)
 const students = ref([
   {
-    id: 1,
+    id: 101,
     name: "Abebe Kebede",
     uniId: "UoG/123/14",
-    progress: 75,
     present: true,
+    status: "IN_PROGRESS",
   },
   {
-    id: 2,
+    id: 102,
     name: "Selam Tesfaye",
     uniId: "UoG/456/14",
-    progress: 40,
-    present: false,
+    present: true,
+    status: "IN_PROGRESS",
   },
   {
-    id: 3,
+    id: 103,
     name: "Dawit Zewdu",
     uniId: "UoG/789/14",
-    progress: 95,
-    present: true,
+    present: false,
+    status: "IN_PROGRESS",
   },
 ]);
+
+// 4. TASK: Bulk Certification (The Status Flip)
+const handleBulkPromotion = () => {
+  if (selectedStudents.value.length === 0) return;
+
+  const count = selectedStudents.value.length;
+  // LOGIC:
+  // - Mark 'Wudase' as CERTIFIED in DB
+  // - Initialize 'Dawit' as IN_PROGRESS
+  // - Remove from current view
+  alert(
+    `Mastery Confirmed: ${count} students certified in ${selectedClass.value.name}. They are now promoted to the next curriculum level.`,
+  );
+
+  // UI Refresh
+  selectedStudents.value = [];
+};
+
+const saveDailyAttendance = () => {
+  alert(
+    "Daily Attendance & Mastery records have been sealed for this session.",
+  );
+};
 </script>
+
 <template>
   <div class="space-y-6 animate-fade-in">
-    <!-- Header with Breadcrumbs -->
+    <!-- HEADER -->
     <div
-      class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+      class="flex justify-between items-center bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"
     >
       <div class="space-y-1">
         <div
           class="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest"
         >
           <NuxtLink
-            :to="`/admin/${$route.params.slug}/education`"
-            class="hover:text-maedot-gold"
+            :to="`/admin/${slug}/education`"
+            class="hover:text-maedot-gold transition-colors"
             >Education</NuxtLink
           >
           <Icon name="lucide:chevron-right" class="w-3 h-3" />
-          <span>Abinet Tracking</span>
+          <span>Abinet Mastery</span>
         </div>
-        <h1 class="text-2xl font-black text-maedot-navy uppercase">
-          Traditional Class Registry
+        <h1
+          class="text-2xl font-black text-maedot-navy uppercase tracking-tighter"
+        >
+          Traditional Registry
         </h1>
       </div>
       <BaseButton
         variant="primary"
-        icon="lucide:plus"
-        @click="showAddClass = true"
-        >Create New Stream</BaseButton
+        icon="lucide:user-plus"
+        @click="isEnrollOpen = true"
+        >Enroll New Student</BaseButton
       >
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      <!-- 1. ACTIVE CLASS SELECTOR (Left Rail) -->
+      <!-- LEFT RAIL: Book Selectors (The Mastery Buckets) -->
       <div class="lg:col-span-4 space-y-4">
         <h3
-          class="text-xs font-black text-slate-400 uppercase tracking-widest ml-1"
+          class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2"
         >
-          Select Active Class
+          Curriculum Streams
         </h3>
         <div
           v-for="cls in abinetClasses"
           :key="cls.id"
           @click="selectedClass = cls"
-          class="p-4 rounded-2xl border cursor-pointer transition-all space-y-3"
+          class="p-5 rounded-3xl border cursor-pointer transition-all duration-300 relative overflow-hidden"
           :class="
             selectedClass?.id === cls.id
-              ? 'bg-white border-maedot-gold shadow-lg ring-1 ring-maedot-gold/20'
+              ? 'bg-white border-maedot-gold shadow-xl'
               : 'bg-white/50 border-slate-200 hover:border-slate-300'
           "
         >
-          <div class="flex justify-between items-start">
+          <div
+            v-if="selectedClass?.id === cls.id"
+            class="absolute top-0 right-0 p-2"
+          >
+            <Icon name="lucide:award" class="text-maedot-gold w-5 h-5" />
+          </div>
+          <div class="flex items-center gap-4">
             <div
-              class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center"
+              class="w-12 h-12 rounded-2xl flex items-center justify-center"
+              :class="
+                selectedClass?.id === cls.id
+                  ? 'bg-maedot-gold/10'
+                  : 'bg-slate-100'
+              "
             >
               <Icon
-                name="lucide:church"
+                name="lucide:book-marked"
                 :class="
                   selectedClass?.id === cls.id
                     ? 'text-maedot-gold'
@@ -115,125 +163,187 @@ const students = ref([
                 class="w-6 h-6"
               />
             </div>
-            <span
-              class="text-[10px] font-black px-2 py-1 rounded bg-slate-100 text-slate-500 uppercase"
-              >{{ cls.schedule }}</span
-            >
-          </div>
-          <div>
-            <h4 class="font-bold text-maedot-navy">{{ cls.name }}</h4>
-            <p class="text-xs text-slate-500">Instructor: {{ cls.teacher }}</p>
+            <div>
+              <h4
+                class="font-black text-maedot-navy uppercase text-xs tracking-tight"
+              >
+                {{ cls.name }}
+              </h4>
+              <p class="text-[10px] text-slate-400 font-bold uppercase">
+                {{ cls.teacher }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. ATTENDANCE & MILESTONE LOG (Main View) -->
+      <!-- MAIN VIEW: Mastery Table & Bulk Action -->
       <div class="lg:col-span-8">
         <BaseCard
           v-if="selectedClass"
           :padding="false"
-          class="border-t-4 border-maedot-gold"
+          class="border-t-8 border-maedot-navy"
         >
           <div
-            class="p-6 border-b border-slate-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
+            class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/30"
           >
             <div>
-              <h3 class="font-black text-maedot-navy uppercase text-sm">
-                Attendance: {{ selectedClass.name }}
+              <h3 class="font-black text-maedot-navy uppercase text-sm italic">
+                {{ selectedClass.name }} Registry
               </h3>
-              <p class="text-xs text-slate-400 font-medium">
-                Session: {{ new Date().toLocaleDateString("en-ET") }} (E.C.)
+              <p
+                class="text-[10px] text-slate-400 font-black uppercase tracking-widest"
+              >
+                Session: {{ new Date().toLocaleDateString("en-ET") }} E.C.
               </p>
             </div>
-            <div class="flex gap-2">
-              <BaseButton
-                variant="secondary"
-                size="sm"
-                icon="lucide:check-circle-2"
-                >Mark All Present</BaseButton
-              >
-              <BaseButton variant="primary" size="sm" icon="lucide:save"
-                >Save Attendance</BaseButton
-              >
-            </div>
+
+            <!-- THE PROMOTER ACTION (Visible only when students are checked) -->
+            <BaseButton
+              v-if="selectedStudents.length > 0"
+              variant="primary"
+              size="sm"
+              icon="lucide:graduation-cap"
+              class="bg-emerald-600 border-none animate-bounce"
+              @click="handleBulkPromotion"
+            >
+              Certify & Promote ({{ selectedStudents.length }})
+            </BaseButton>
           </div>
 
-          <!-- Student List with Toggle (Fast Interaction) -->
-          <div class="overflow-hidden">
-            <table class="w-full text-left border-collapse">
-              <thead
-                class="bg-slate-50 text-[10px] uppercase font-bold text-slate-500"
-              >
-                <tr>
-                  <th class="px-6 py-3">Student Name</th>
-                  <th class="px-6 py-3">ID Number</th>
-                  <th class="px-6 py-3">Progress</th>
-                  <th class="px-6 py-3 text-right">Attendance</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-50">
-                <tr
-                  v-for="student in students"
-                  :key="student.id"
-                  class="hover:bg-slate-50/50 transition-colors"
+          <BaseDataTable :data="students">
+            <!-- Checkbox for Manual Promotion Selection -->
+            <Column headerStyle="width: 3rem">
+              <template #body="{ data }">
+                <input
+                  type="checkbox"
+                  v-model="selectedStudents"
+                  :value="data.id"
+                  class="w-4 h-4 rounded border-slate-300 text-maedot-gold accent-maedot-gold"
+                />
+              </template>
+            </Column>
+
+            <Column
+              field="name"
+              header="Student Name"
+              class="font-bold text-slate-700 text-xs"
+            />
+            <Column
+              field="uniId"
+              header="University ID"
+              class="text-[10px] text-slate-400 font-medium"
+            />
+
+            <Column header="Mastery Status">
+              <template #body>
+                <span
+                  class="px-2 py-0.5 bg-amber-50 text-amber-600 rounded text-[8px] font-black uppercase border border-amber-100"
+                  >In Progress</span
                 >
-                  <td class="px-6 py-4">
-                    <div class="flex items-center gap-3">
-                      <div
-                        class="w-7 h-7 rounded-full bg-maedot-navy text-white text-[10px] flex items-center justify-center font-bold uppercase"
-                      >
-                        {{ student.name.charAt(0) }}
-                      </div>
-                      <span class="text-sm font-bold text-slate-700">{{
-                        student.name
-                      }}</span>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 text-xs text-slate-400">
-                    {{ student.uniId }}
-                  </td>
-                  <td class="px-6 py-4">
-                    <div class="w-24 bg-slate-100 h-1.5 rounded-full">
-                      <div
-                        class="bg-maedot-gold h-full"
-                        :style="{ width: student.progress + '%' }"
-                      ></div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 text-right">
-                    <label
-                      class="relative inline-flex items-center cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        v-model="student.present"
-                        class="sr-only peer"
-                      />
-                      <div
-                        class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"
-                      ></div>
-                    </label>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+              </template>
+            </Column>
+
+            <Column header="Today's Attendance" class="text-right">
+              <template #body="{ data }">
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    v-model="data.present"
+                    class="sr-only peer"
+                  />
+                  <div
+                    class="w-10 h-5 bg-slate-200 rounded-full peer peer-checked:bg-emerald-500 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"
+                  ></div>
+                </label>
+              </template>
+            </Column>
+          </BaseDataTable>
+
+          <div
+            class="p-4 bg-slate-50 flex justify-end border-t border-slate-100"
+          >
+            <BaseButton
+              variant="primary"
+              icon="lucide:save"
+              @click="saveDailyAttendance"
+              >Save Daily Record</BaseButton
+            >
           </div>
         </BaseCard>
 
-        <!-- Placeholder when no class is selected -->
+        <!-- EMPTY STATE -->
         <div
           v-else
-          class="h-64 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 space-y-3"
+          class="h-96 border-2 border-dashed border-slate-200 rounded-[3rem] flex flex-col items-center justify-center text-slate-400 gap-4"
         >
-          <Icon
-            name="lucide:mouse-pointer-click"
-            class="w-10 h-10 opacity-20"
-          />
-          <p class="text-sm font-medium">
-            Select an Abinet class stream to start tracking
+          <div class="p-6 bg-slate-50 rounded-full">
+            <Icon
+              name="lucide:mouse-pointer-click"
+              class="w-12 h-12 opacity-20"
+            />
+          </div>
+          <p class="text-xs font-black uppercase tracking-widest">
+            Select a Book Stream to Manage Mastery
           </p>
         </div>
       </div>
     </div>
+    <BaseGovernanceDrawer
+      :is-open="isEnrollOpen"
+      title="Enroll Student in Abinet"
+      subtitle="Adding a member to the Traditional School"
+      action-label="Authorize Enrollment"
+      @close="isEnrollOpen = false"
+      @confirm="handleEnrollment"
+    >
+      <div class="space-y-6">
+        <!-- 1. GLOBAL SEARCH (Linking to Secretary's Data) -->
+        <div class="space-y-2">
+          <label
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Search Global Registry</label
+          >
+          <BaseInput
+            placeholder="Type Name or Uni ID..."
+            icon="lucide:search"
+          />
+          <p class="text-[9px] text-slate-400 italic">
+            Select from the existing Gbi Guba members list.
+          </p>
+        </div>
+
+        <!-- 2. CONTEXT PREVIEW -->
+        <div
+          class="p-5 bg-maedot-navy rounded-3xl text-white space-y-3 relative overflow-hidden"
+        >
+          <Icon
+            name="lucide:book-open"
+            class="absolute -right-4 -bottom-4 w-20 h-20 opacity-10 text-maedot-gold"
+          />
+          <p class="text-[10px] font-black text-maedot-gold uppercase">
+            Target Stream
+          </p>
+          <p class="text-sm font-bold">
+            {{ selectedClass?.name || "Please select a book stream first" }}
+          </p>
+          <p class="text-[10px] opacity-60 uppercase font-black">
+            Instructor: {{ selectedClass?.teacher }}
+          </p>
+        </div>
+
+        <!-- 3. ADDITIONAL METADATA -->
+        <div class="space-y-2">
+          <label
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Entry Note (Optional)</label
+          >
+          <textarea
+            class="w-full p-4 bg-slate-50 border rounded-3xl text-xs outline-none focus:border-maedot-gold"
+            placeholder="e.g. Starting from the beginning of the book..."
+          ></textarea>
+        </div>
+      </div>
+    </BaseGovernanceDrawer>
   </div>
 </template>
