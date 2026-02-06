@@ -83,6 +83,11 @@ const menuMap = {
       href: "education/archives",
       icon: "lucide:library",
     },
+    {
+      name: "Handover & Succession",
+      href: "education/handover",
+      icon: "lucide:refresh-cw",
+    },
   ],
   secretary: [
     {
