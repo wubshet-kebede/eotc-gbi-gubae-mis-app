@@ -26,6 +26,24 @@ const performers = ref([
     isAvailable: false,
   },
 ]);
+
+const CreativeActions = [
+  {
+    label: "Book Performance",
+    icon: "lucide:calendar-plus",
+    command: () => {},
+  },
+  {
+    label: "New Talent Entry",
+    icon: "lucide:user-plus",
+    command: () => {},
+  },
+  {
+    label: "Asset Handover",
+    icon: "lucide:package-check",
+    command: () => navigateTo(`/admin/${$route.params.slug}/mezmur/handover`),
+  },
+];
 </script>
 <template>
   <div class="space-y-8 animate-fade-in">
@@ -129,26 +147,9 @@ const performers = ref([
 
       <!-- 2. QUICK ACTIONS & PERFORMANCE PIPELINE -->
       <div class="xl:col-span-4 space-y-6">
-        <AdminQuickActions
+        <AdminActionButton
           title="Creative Actions"
-          :actions="[
-            {
-              label: 'Book Performance',
-              icon: 'lucide:calendar-plus',
-              command: () => {},
-            },
-            {
-              label: 'New Talent Entry',
-              icon: 'lucide:user-plus',
-              command: () => {},
-            },
-            {
-              label: 'Asset Handover',
-              icon: 'lucide:package-check',
-              command: () =>
-                navigateTo(`/admin/${$route.params.slug}/arts/handover`),
-            },
-          ]"
+          :actions="CreativeActions"
         />
 
         <!-- Script Status Preview (Ref #6) -->

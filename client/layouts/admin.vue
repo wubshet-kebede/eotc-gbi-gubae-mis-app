@@ -147,10 +147,20 @@ const menuMap = {
       icon: "lucide:file-hand",
     },
   ],
-  arts: [
-    { name: "Talent Scout", href: "arts", icon: "lucide:users" },
-    { name: "Hymn Library", href: "arts/library", icon: "lucide:music" },
-    { name: "Script Pipeline", href: "arts/scripts", icon: "lucide:scroll" },
+  mezmur: [
+    { name: "Talent Scout", href: "mezmur", icon: "lucide:users" },
+    { name: "Hymn Library", href: "mezmur/library", icon: "lucide:music" },
+    { name: "Script Pipeline", href: "mezmur/scripts", icon: "lucide:scroll" },
+    {
+      name: "Handovers ",
+      href: "mezmur/handover",
+      icon: "lucide:calendar",
+    },
+    {
+      name: "Archives",
+      href: "mezmur/archives",
+      icon: "lucide:archive",
+    },
   ],
   revenue: [
     { name: "Sales Overview", href: "revenue", icon: "lucide:trending-up" },
@@ -197,6 +207,7 @@ const activeMenu = computed(() => {
   if (path.includes("/planning")) return menuMap.planning;
   if (path.includes("/charity")) return menuMap.charity;
   if (path.includes("/membercare")) return menuMap.membercare;
+  if (path.includes("/mezmur")) return menuMap.mezmur;
   return menuMap.chairperson; // Default home
 });
 
