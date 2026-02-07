@@ -6,6 +6,8 @@ const archiveFolders = [
   { year: "2015 E.C", count: 142 },
   { year: "2016 E.C", count: 98 },
 ];
+const isSummaryOpen = ref(false);
+const selectedYearSummary = ref(null);
 
 const pastResolutions = ref([
   { year: "2015 E.C", category: "Financial Support", resolutionRate: 92 },
@@ -84,6 +86,10 @@ const pastResolutions = ref([
                   variant="ghost"
                   size="sm"
                   class="text-[10px] uppercase font-black"
+                  @click="
+                    isSummaryOpen = true;
+                    selectedYearSummary = data;
+                  "
                   >View Summary</BaseButton
                 >
               </template>
@@ -123,5 +129,96 @@ const pastResolutions = ref([
         </BaseCard>
       </div>
     </div>
+    <BaseGovernanceDrawer
+      :is-open="isSummaryOpen"
+      :title="selectedYearSummary?.year + ' ' + selectedYearSummary?.category"
+      subtitle="De-identified Historical Performance Analysis"
+      @close="isSummaryOpen = false"
+    >
+      <div class="space-y-8">
+        <!-- 1. PERFORMANCE BADGE -->
+        <div
+          class="flex items-center justify-between p-6 bg-emerald-50 rounded-[2.5rem] border border-emerald-100"
+        >
+          <div>
+            <p
+              class="text-[10px] font-black text-emerald-600 uppercase tracking-widest"
+            >
+              Resolution Success
+            </p>
+            <p class="text-3xl font-black text-emerald-700">
+              {{ selectedYearSummary?.resolutionRate }}%
+            </p>
+          </div>
+          <Icon name="lucide:award" class="w-12 h-12 text-emerald-200" />
+        </div>
+
+        <!-- 2. ANALYTICAL BREAKDOWN -->
+        <div class="space-y-4">
+          <h4
+            class="text-xs font-black text-maedot-navy uppercase tracking-widest"
+          >
+            Key Insights
+          </h4>
+
+          <!-- Logic: The "Root Cause" -->
+          <div
+            class="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1"
+          >
+            <p class="text-[9px] font-black text-slate-400 uppercase">
+              Primary Challenge
+            </p>
+            <p class="text-xs text-slate-700 font-medium italic">
+              "Students struggled with semester-end financial gaps and academic
+              burnout."
+            </p>
+          </div>
+
+          <!-- Logic: The "Winning Strategy" -->
+          <div
+            class="p-4 bg-maedot-gold/5 rounded-2xl border border-maedot-gold/20 space-y-1"
+          >
+            <p
+              class="text-[9px] font-black text-maedot-gold uppercase tracking-tighter"
+            >
+              Most Effective Intervention
+            </p>
+            <p class="text-xs text-maedot-navy font-bold">
+              Initiated Peer-to-Peer tutoring & direct Charity Dept integration.
+            </p>
+          </div>
+        </div>
+
+        <!-- 3. RESOURCE EFFICIENCY -->
+        <div class="p-6 bg-maedot-navy rounded-[2.5rem] text-white">
+          <div
+            class="flex justify-between items-center mb-4 border-b border-white/10 pb-4"
+          >
+            <span class="text-[10px] font-black uppercase text-slate-400"
+              >Cases Handled</span
+            >
+            <span class="text-sm font-black">42 Students</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-[10px] font-black uppercase text-slate-400"
+              >Avg. Support Duration</span
+            >
+            <span class="text-sm font-black text-maedot-gold italic"
+              >14 Days</span
+            >
+          </div>
+        </div>
+
+        <!-- 4. ACTION -->
+        <BaseButton
+          variant="secondary"
+          block
+          icon="lucide:file-down"
+          class="border-slate-200"
+        >
+          Download Full De-identified PDF
+        </BaseButton>
+      </div>
+    </BaseGovernanceDrawer>
   </div>
 </template>
