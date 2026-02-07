@@ -124,17 +124,27 @@ const menuMap = {
       icon: "lucide:file-check",
     },
   ],
-  care: [
-    { name: "Support Tickets", href: "care/tickets", icon: "lucide:life-buoy" },
+  membercare: [
+    { name: "Case Dashboard", href: "membercare", icon: "lucide:users" },
+    {
+      name: "Support Tickets",
+      href: "membercare/tickets",
+      icon: "lucide:life-buoy",
+    },
     {
       name: "Mentorship Map",
-      href: "care/mentorship",
+      href: "membercare/mentorship",
       icon: "lucide:heart-handshake",
     },
     {
       name: "Case Archives",
-      href: "care/archives",
+      href: "membercare/archives",
       icon: "lucide:folder-heart",
+    },
+    {
+      name: "Handover Notes",
+      href: "membercare/handover",
+      icon: "lucide:file-hand",
     },
   ],
   arts: [
@@ -186,6 +196,7 @@ const activeMenu = computed(() => {
   if (path.includes("/revenue")) return menuMap.revenue;
   if (path.includes("/planning")) return menuMap.planning;
   if (path.includes("/charity")) return menuMap.charity;
+  if (path.includes("/membercare")) return menuMap.membercare;
   return menuMap.chairperson; // Default home
 });
 

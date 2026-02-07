@@ -27,6 +27,24 @@ const mentorSummary = ref([
   { name: "Dn. Solomon", role: "Senior Mentor", count: 12 },
   { name: "Memhir Tekle", role: "Spiritual Father", count: 28 },
 ]);
+const showAssignModal = ref(false);
+const selectedStudent = ref(null);
+const selectedMentor = ref(null);
+
+// MOCK LOGIC: Finding the mentor with lowest capacity
+const suggestedMentor = computed(() => {
+  return [...mentorSummary.value].sort((a, b) => a.count - b.count)[0];
+});
+
+const handleAssignment = () => {
+  // Logic:
+  // 1. Immutable Bind: Lock Student to Mentor in DB (No changes until graduation)
+  // 2. Trigger SMS: "Greetings Memhir [Name], you have been assigned [Student Name] as a new Niseha kid."
+  alert(
+    `Assignment Sealed! SMS notification sent to ${selectedMentor.value.name}.`,
+  );
+  showAssignModal.value = false;
+};
 </script>
 <template>
   <div class="space-y-6 animate-fade-in">
@@ -178,5 +196,86 @@ const mentorSummary = ref([
         </div>
       </div>
     </div>
+    <BaseGovernanceDrawer
+      :is-open="showAssignModal"
+      title="New Spiritual Assignment"
+      subtitle="Binding a student to a Niseha Father"
+      action-label="Authorize & Send SMS"
+      @close="showAssignModal = false"
+      @confirm="handleAssignment"
+    >
+      <div class="space-y-6">
+        <!-- 1. SEARCH STUDENT (From Unassigned List) -->
+        <div class="space-y-2">
+          <label
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Select Unassigned Student</label
+          >
+          <BaseInput
+            placeholder="Search Name or Batch..."
+            icon="lucide:search"
+          />
+        </div>
+
+        <!-- 2. THE INTELLIGENT SUGGESTION -->
+        <div
+          class="p-4 bg-maedot-gold/10 rounded-2xl border border-maedot-gold/20 space-y-2"
+        >
+          <div class="flex items-center gap-2 text-maedot-gold">
+            <Icon name="lucide:sparkles" class="w-4 h-4" />
+            <p class="text-[10px] font-black uppercase">
+              System Suggestion (Lowest Workload)
+            </p>
+          </div>
+          <p class="text-xs font-bold text-maedot-navy">
+            {{ suggestedMentor.name }}
+            <span class="text-slate-400"
+              >({{ suggestedMentor.count }} Kids)</span
+            >
+          </p>
+          <BaseButton
+            variant="ghost"
+            size="sm"
+            class="h-auto p-0 text-maedot-gold text-[10px] font-black underline"
+            @click="selectedMentor = suggestedMentor"
+          >
+            Accept Suggestion
+          </BaseButton>
+        </div>
+
+        <!-- 3. MANUAL MENTOR SELECTOR -->
+        <div class="space-y-2">
+          <label
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >Or Select Any Mentor</label
+          >
+          <select
+            v-model="selectedMentor"
+            class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-3xl text-sm font-bold outline-none text-maedot-navy focus:border-maedot-gold"
+          >
+            <option
+              v-for="mentor in mentorSummary"
+              :key="mentor.name"
+              :value="mentor"
+            >
+              {{ mentor.name }} (Capacity:
+              {{ ((mentor.count / 30) * 100).toFixed(0) }}%)
+            </option>
+          </select>
+        </div>
+
+        <!-- 4. IMMUTABILITY NOTICE -->
+        <div
+          class="flex items-start gap-3 p-4 bg-slate-900 rounded-2xl text-white"
+        >
+          <Icon name="lucide:lock" class="text-maedot-gold w-5 h-5 shrink-0" />
+          <p class="text-[10px] text-slate-400 leading-relaxed italic">
+            "Warning: This spiritual bond is
+            <span class="text-white">Immutable</span>. Once assigned, the record
+            cannot be changed until the student's University Graduation."
+          </p>
+        </div>
+      </div>
+    </BaseGovernanceDrawer>
   </div>
 </template>
