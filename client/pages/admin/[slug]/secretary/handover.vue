@@ -1,9 +1,11 @@
 <script setup>
+/**
+ * ADMINISTRATIVE SUCCESSION (Ref #3 & #12)
+ * Logic: Data Integrity Sealing, Role-Based Authority Transfer, and Audit Clearance
+ */
 definePageMeta({ layout: "admin" });
 
-const currentDept = "Secretary";
-const allDone = ref(false);
-
+const isProcessing = ref(false);
 const handoverItems = ref([
   {
     id: 1,
@@ -21,102 +23,181 @@ const handoverItems = ref([
     id: 3,
     label: "Member Directory",
     description: "2018 graduates marked",
-    done: false,
-  },
+    done: true,
+  }, // Changed to true for demo
   {
     id: 4,
     label: "Audit Clearance",
     description: "Verified by Dept 12",
-    done: false,
+    done: true,
   },
 ]);
+
+const allDone = computed(() => handoverItems.value.every((item) => item.done));
+
+const finalizeHandover = () => {
+  isProcessing.value = true;
+  // Logic: 1. Archive the 2018 E.C. Dataset | 2. Reset Role for Yared | 3. Generate Official Succession PDF
+  setTimeout(() => {
+    isProcessing.value = false;
+    alert(
+      "ርክክብ (Handover) Successful. Administrative authority has been transferred to Yared Teshome.",
+    );
+  }, 2000);
+};
 </script>
+
 <template>
   <div class="space-y-8 animate-fade-in">
-    <div class="flex justify-between items-center">
-      <div>
-        <h1 class="text-2xl font-black text-maedot-navy uppercase">
-          Departmental Handover
+    <!-- Header with Dynamic Audit Badge -->
+    <div
+      class="flex justify-between items-center bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"
+    >
+      <div class="space-y-1">
+        <h1
+          class="text-2xl font-black text-maedot-navy uppercase tracking-tighter italic"
+        >
+          Secretary Succession
         </h1>
-        <p class="text-sm text-slate-500 font-bold uppercase tracking-widest">
-          Role: {{ currentDept }} Secretary
+        <p
+          class="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-none"
+        >
+          Institutional Custody Transfer
         </p>
       </div>
-      <!-- Status Badge -->
       <div
-        class="px-4 py-2 bg-amber-100 text-amber-700 rounded-xl text-xs font-black uppercase tracking-tighter"
+        :class="
+          allDone
+            ? 'bg-emerald-100 text-emerald-600'
+            : 'bg-rose-100 text-rose-600'
+        "
+        class="px-4 py-2 rounded-2xl text-[10px] font-black uppercase shadow-sm animate-pulse"
       >
-        Status: Awaiting Audit Clearance
+        {{ allDone ? "Audit Cleared" : "Audit Pending" }}
       </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- 1. Master Handover Checklist (Ref #12 Compliance) -->
+      <!-- 1. THE AUDIT LOG -->
       <div class="lg:col-span-2 space-y-6">
-        <BaseCard title="Administrative Transfer Checklist">
+        <BaseCard
+          title="Administrative Transfer Checklist"
+          subtitle="Verified closure of 2018 E.C. records"
+        >
           <div class="space-y-4">
             <div
               v-for="item in handoverItems"
               :key="item.id"
-              class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100"
+              class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-all hover:border-maedot-gold"
             >
               <div class="flex items-center gap-4">
-                <Icon
-                  :name="item.done ? 'lucide:check-circle' : 'lucide:circle'"
-                  :class="item.done ? 'text-emerald-500' : 'text-slate-300'"
-                  class="w-6 h-6"
-                />
+                <div
+                  :class="
+                    item.done
+                      ? 'bg-emerald-500 shadow-lg shadow-emerald-100'
+                      : 'bg-slate-200'
+                  "
+                  class="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+                >
+                  <Icon
+                    :name="item.done ? 'lucide:check' : 'lucide:lock-keyhole'"
+                    class="w-4 h-4 text-white"
+                  />
+                </div>
                 <div>
-                  <p class="text-sm font-bold text-maedot-navy">
+                  <p class="text-xs font-bold text-maedot-navy">
                     {{ item.label }}
                   </p>
-                  <p class="text-[10px] text-slate-500 uppercase">
+                  <p
+                    class="text-[9px] text-slate-400 font-black uppercase tracking-widest"
+                  >
                     {{ item.description }}
                   </p>
                 </div>
               </div>
-              <BaseButton v-if="!item.done" variant="secondary" size="sm"
-                >Seal Records</BaseButton
+              <span
+                v-if="item.done"
+                class="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic"
+                >Sealed</span
+              >
+              <BaseButton
+                v-else
+                variant="secondary"
+                size="sm"
+                class="text-[9px] font-black uppercase tracking-tighter"
+                >Seal Task</BaseButton
               >
             </div>
           </div>
         </BaseCard>
 
-        <!-- 2. Legal Affirmation -->
-        <BaseCard class="bg-maedot-navy border-none text-white">
-          <p class="text-xs italic opacity-80 mb-4">
-            "I hereby certify that all official letters, senate minutes, and
-            member directories have been updated and sealed for the 2018 E.C.
-            fiscal year."
+        <!-- 2. THE LEGAL OATH -->
+        <div
+          class="p-8 bg-maedot-navy rounded-[3rem] text-white space-y-6 shadow-2xl relative overflow-hidden"
+        >
+          <Icon
+            name="lucide:feather"
+            class="absolute -right-6 -bottom-6 w-32 h-32 opacity-10 text-maedot-gold rotate-12"
+          />
+          <p class="text-xs italic text-slate-300 leading-relaxed">
+            "I hereby certify that all official records for 2018 E.C. have been
+            verified and archived. I transfer the **Global Registry** and
+            **Protocol Keys** to the successor."
           </p>
           <BaseButton
-            variant="primary"
             block
+            variant="primary"
+            size="lg"
             icon="lucide:key-round"
             :disabled="!allDone"
+            :loading="isProcessing"
+            @click="finalizeHandover"
           >
-            Initiate Transfer to Successor
+            Finalize ርክክብ (Succession)
           </BaseButton>
-        </BaseCard>
+        </div>
       </div>
 
-      <!-- 3. Successor Info (The Recipient) -->
+      <!-- 3. SUCCESSOR CARD -->
       <div class="space-y-6">
-        <BaseCard title="Incoming Secretary">
-          <div class="text-center space-y-4">
-            <div
-              class="w-20 h-20 bg-maedot-gold rounded-full mx-auto flex items-center justify-center text-maedot-navy text-2xl font-black shadow-xl"
-            >
-              YT
+        <BaseCard title="Incoming Custodian">
+          <div class="text-center space-y-6 py-4">
+            <div class="relative inline-block">
+              <div
+                class="w-24 h-24 bg-maedot-gold rounded-[2.5rem] flex items-center justify-center text-maedot-navy text-3xl font-black shadow-2xl"
+              >
+                YT
+              </div>
+              <div
+                class="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-lg"
+              >
+                <Icon
+                  name="lucide:shield-check"
+                  class="text-emerald-500 w-6 h-6"
+                />
+              </div>
             </div>
             <div>
-              <h4 class="font-black text-maedot-navy">Yared Teshome</h4>
-              <p class="text-xs text-slate-500">ID: UoG/889/15</p>
+              <h4
+                class="font-black text-maedot-navy uppercase tracking-tighter"
+              >
+                Yared Teshome
+              </h4>
+              <p
+                class="text-xs text-slate-400 font-bold uppercase tracking-widest"
+              >
+                Successor ID: UoG/889/15
+              </p>
             </div>
-            <div
-              class="p-3 bg-slate-50 rounded-xl text-[10px] text-slate-400 font-bold uppercase"
-            >
-              Pending Acceptance
+            <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
+              <p
+                class="text-[10px] text-slate-400 font-black uppercase tracking-widest"
+              >
+                Authority Status
+              </p>
+              <p class="text-[10px] font-black text-amber-600 uppercase italic">
+                Awaiting Final Key
+              </p>
             </div>
           </div>
         </BaseCard>
