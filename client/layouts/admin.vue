@@ -110,6 +110,11 @@ const menuMap = {
       href: "secretary/archives",
       icon: "lucide:folder-lock",
     },
+    {
+      name: "Handover Records",
+      href: "secretary/handover",
+      icon: "lucide:refresh-cw",
+    },
   ],
   audit: [
     { name: "System Health", href: "audit", icon: "lucide:shield-check" },
