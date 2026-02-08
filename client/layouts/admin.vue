@@ -169,11 +169,17 @@ const menuMap = {
   ],
   planning: [
     { name: "KPI Dashboard", href: "planning", icon: "lucide:gauge" },
-    { name: "Annual Plan", href: "planning/plan", icon: "lucide:map" },
+
     {
       name: "BI Archives",
       href: "planning/archives",
       icon: "lucide:bar-chart-3",
+    },
+    { name: "Handover Plan", href: "planning/handover", icon: "lucide:map" },
+    {
+      name: "Project Tracker",
+      href: "planning/project",
+      icon: "lucide:clipboard-list",
     },
   ],
   charity: [
